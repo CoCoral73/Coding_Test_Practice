@@ -1,56 +1,40 @@
-#include <bits/stdc++.h>
-using namespace std ;
-class Best
-{
-public:
-    int first ;
-    int second ;
-    int val ;
-    Best(){ first = 0, second = 0, val = 2e31 - 2; }
-};
-int N ;
-Best best = Best() ;
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <queue>
+#include <map>
+#include <set>
+#include <algorithm>
+#include <cmath>
+#define fastIO ios_base::sync_with_stdio(false), cin.tie(0), cout.tie(0)
+using namespace std;
 
-int main()
-{
-    ios::sync_with_stdio(0), cin.tie(0) ;
-    cin >> N ;
-    vector<int> liquid(N) ;
+int main() {
+    fastIO;
+    int N;
 
-    for(int &it : liquid)
-        cin >> it ;
-    sort(liquid.begin(), liquid.end()) ;
+    cin >> N;
+    vector<int> pHs(N);
+    for (int &pH : pHs)
+        cin >> pH;
 
-    for(int i = 0 ; i < N - 1 ; i++)
-    {
-        int low = i + 1, high = N - 1 ;
-        while(low != high)
-        {
-            int mid = (low + high) >> 1 ;
-            int now = abs(liquid[i] + liquid[mid]) ;
-
-            if(now > abs(liquid[i] + liquid[mid + 1]))
-            {
-                low = mid + 1 ;
-            }
-            else if(now > abs(liquid[i] + liquid[mid - 1]))
-            {
-                high = mid ;
-            }
+    sort(pHs.begin(), pHs.end());
+    pair<int, int> answer = { pHs.front(), pHs.back() } ;
+    for (int i = 0; i < N-1; i++) {
+        int s = i+1, e = N-1, mid;
+        while (s <= e) {
+            mid = (s + e) / 2;
+            int mid_value = abs(pHs[i] + pHs[mid]);
+            if (mid_value > abs(pHs[i] + pHs[mid-1]))
+                e = mid - 1;
+            else if (mid_value > abs(pHs[i] + pHs[mid+1]))
+                s = mid + 1;
             else
-            {
-                low = mid ;
-                break ;
-            }
+                break;
         }
-
-        if(abs(best.val) > abs(liquid[i] + liquid[low]))
-        {
-            best.first = liquid[i] ;
-            best.second = liquid[low] ;
-            best.val = liquid[i] + liquid[low] ;
-        }
+        answer = abs(answer.first + answer.second) > abs(pHs[i] + pHs[mid]) ? make_pair(pHs[i], pHs[mid]) : answer;
     }
-
-    cout << best.first << " " << best.second << "\n" ;
+    cout << answer.first << " " << answer.second;
 }
+
