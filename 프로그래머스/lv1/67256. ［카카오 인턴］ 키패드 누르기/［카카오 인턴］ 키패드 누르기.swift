@@ -6,7 +6,7 @@ func solution(_ numbers:[Int], _ hand:String) -> String {
     var answer = ""
     
     numbers.forEach {
-        if $0 != 0 && $0 % 3 == 1 { answer += "L"; now_left = keypad[$0] }
+        if $0 % 3 == 1 { answer += "L"; now_left = keypad[$0] }
         else if $0 != 0 && $0 % 3 == 0 { answer += "R"; now_right = keypad[$0] }
         else {
             let d_left = abs(keypad[$0].0 - now_left.0) + abs(keypad[$0].1 - now_left.1)
