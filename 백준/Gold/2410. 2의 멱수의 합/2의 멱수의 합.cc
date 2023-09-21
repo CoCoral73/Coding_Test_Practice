@@ -28,7 +28,7 @@ BJ::BJ() {
 void BJ::solution() {
     int power = 1;
     while (power <= N) {
-        for (int i = 1; i <= N; i++) {
+        for (int i = power; i <= N; i++) {
             if (power == 1)
                 dp[i] = 1;
             else {
