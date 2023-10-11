@@ -42,8 +42,8 @@ signed main() {
         exit(0);
     }
 
-    int s = pq1.top().second - d, e = pq1.top().second;
-    unsigned long MAX = 1;
+    int e = pq1.top().second;
+    unsigned long MAX = 0;
     pq2.push(pq1.top());
     pq1.pop();
 
@@ -53,10 +53,8 @@ signed main() {
 
         if (top.second > e) {
             MAX = max(MAX, pq2.size());
-            while (!pq2.empty() && pq2.top().first < top.second - d) {
-                //cout << top.second << ' ' << pq2.top().first << endl;
+            while (!pq2.empty() && pq2.top().first < top.second - d)
                 pq2.pop();
-            }
             e = top.second;
         }
         pq2.push(top);
