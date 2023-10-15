@@ -31,7 +31,6 @@ signed main() {
         }
 
         Q.emplace(v[0]);
-        beer[0] = 0;
         while (!Q.empty()) {
             tie(x, y) = Q.front();
             Q.pop();
