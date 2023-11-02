@@ -17,9 +17,9 @@ class BJ {
     int N, M, P;
     vector<int> Sp;
     vector<int> castle;
+    vector<queue<tuple<int, int, int>>> PQ;
     char grid[1000][1000];
-    bool visited1[1000][1000];
-    bool visited2[1000][1000];
+    bool visited[1000][1000];
     int dr[4] = {-1, 0, 1, 0};
     int dc[4] = {0, 1, 0, -1};
 public:
@@ -31,6 +31,7 @@ BJ::BJ() {
     cin >> N >> M >> P;
     Sp = vector<int>(P);
     castle = vector<int>(P);
+    PQ = vector<queue<tuple<int, int, int>>>(P);
 
     for (int &s : Sp)
         cin >> s;
@@ -38,10 +39,12 @@ BJ::BJ() {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) {
             cin >> grid[i][j];
-            visited1[i][j] = false;
-            visited2[i][j] = false;
-            if (isdigit(grid[i][j]))
-                castle[grid[i][j]-'1']++;
+            visited[i][j] = false;
+            if (isdigit(grid[i][j])) {
+                castle[grid[i][j] - '1']++;
+                PQ[grid[i][j]-'1'].emplace(i, j, 0);
+                visited[i][j] = true;
+            }
         }
     }
 
@@ -56,42 +59,34 @@ void BJ::bfs() {
     int r, c, s;
     int canGo = 0;
     while (true) {
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (visited1[i][j]) continue;
-                if (grid[i][j] == '1' + p) {
-                    Q.emplace(i, j, 0);
-                    visited1[i][j] = true;
-                    visited2[i][j] = true;
-                }
-            }
-        }
-
-        bool flag = false;
-        while (!Q.empty()) {
-            tie(r, c, s) = Q.front();
-            Q.pop();
+        queue<tuple<int, int, int>> Q;
+        while (!PQ[p].empty()) {
+            tie(r, c, s) = PQ[p].front();
+            PQ[p].pop();
 
             for (int i = 0; i < 4; i++) {
                 int R = r + dr[i];
                 int C = c + dc[i];
                 if (R < 0 || R >= N || C < 0 || C >= M) continue;
-                if (visited1[R][C] || visited2[R][C] || grid[R][C] == '#') continue;
+                if (visited[R][C] || grid[R][C] == '#') continue;
                 if (isdigit(grid[R][C])) continue;
                 if (s + 1 > Sp[grid[r][c]-'1']) continue;
                 grid[R][C] = grid[r][c];
-                visited2[R][C] = true;
+                visited[R][C] = true;
                 castle[grid[r][c]-'1']++;
-                Q.emplace(R, C, s + 1);
-                flag = true;
+                if (s + 1 == Sp[grid[r][c]-'1'])
+                    Q.emplace(R, C, 0);
+                else
+                    PQ[p].emplace(R, C, s + 1);
             }
         }
-        if (!flag)
+        if (Q.empty())
             canGo++;
         else
             canGo = 0;
         if (canGo == P)
             break;
+        PQ[p] = Q;
         p = (p + 1) % P;
     }
 }
