@@ -29,8 +29,7 @@ BJ::BJ() {
     vector<int> v;
     for (int i = 0; i < N; i++) {
         cin >> n;
-        if (max_pq.empty()) max_pq.emplace(n);
-        else if (min_pq.size() == max_pq.size()) max_pq.emplace(n);
+        if (min_pq.size() == max_pq.size()) max_pq.emplace(n);
         else min_pq.emplace(n);
 
         while (!min_pq.empty() && min_pq.top() < max_pq.top()) {
