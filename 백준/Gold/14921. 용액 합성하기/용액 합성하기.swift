@@ -67,16 +67,7 @@ let N = fIO.readInt(), A = (0..<N).map { _ in fIO.readInt() }
 var ABS = 200000000, answer = 0
 
 for i in 0..<N {
-    var s = 0, e = i - 1
-    while s <= e {
-        let m = (s + e) / 2
-        ABS = min(ABS, abs(A[i] + A[m]))
-        if ABS == abs(A[i] + A[m]) { answer = A[i] + A[m] }
-        if A[i] + A[m] < 0 { s = m + 1 }
-        else if A[i] + A[m] > 0 { e = m - 1 }
-        else { break }
-    }
-    s = i + 1; e = N - 1
+    var s = i + 1, e = N - 1
     while s <= e {
         let m = (s + e) / 2
         ABS = min(ABS, abs(A[i] + A[m]))
