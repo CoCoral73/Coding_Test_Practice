@@ -1,93 +1,112 @@
 #include <iostream>
-#include <sstream>
-#include <string>
+#include <cstring>
 #include <vector>
+#include <algorithm>
 #include <queue>
+#include <string>
+#include <stack>
 #include <map>
 #include <set>
-#include <algorithm>
-#include <cmath>
+#include <list>
+#include <unordered_set>
+#include <unordered_map>
+#include <tuple>
 #include <limits.h>
+#include <math.h>
 #define int long long
-#define fastIO ios_base::sync_with_stdio(false), cin.tie(0), cout.tie(0)
+#define fastio cin.tie(0), cout.tie(0), ios_base::sync_with_stdio(0)
+
 using namespace std;
 
-typedef struct node {
-    int r, c;
-    int time;
-    bool isFire;
-    node(int r, int c, int t, bool iF) {
-        this->r = r;
-        this->c = c;
-        this->time = t;
-        this->isFire = iF;
-    }
-}NODE;
-
-class BJ {
-    int T;
-    int w, h;
-    char grid[1000][1000];
-    bool visited[1000][1000];
-    int dr[4] = {-1, 0, 1, 0};
-    int dc[4] = {0, 1, 0, -1};
-public:
-    BJ();
-    int bfs(queue<NODE> Q);
-};
-
-BJ::BJ() {
-    cin >> T;
-    while (T--) {
-        cin >> w >> h;
-        pair<int, int> start;
-        queue<NODE> Q;
-        for (int i = 0; i < h; i++) {
-            for (int j = 0; j < w; j++) {
-                cin >> grid[i][j];
-                if (grid[i][j] == '*') {
-                    Q.emplace(i, j, 0, true);
-                    visited[i][j] = true;
-                }
-                else if (grid[i][j] == '@') {
-                    start = {i, j};
-                    visited[i][j] = true;
-                }
-                else
-                    visited[i][j] = false;
-            }
-        }
-        Q.emplace(start.first, start.second, 0, false);
-        int answer = bfs(Q);
-        if (answer == -1)
-            cout << "IMPOSSIBLE\n";
-        else
-            cout << answer << '\n';
-    }
-}
-int BJ::bfs(queue<NODE> Q) {
-    while (!Q.empty()) {
-        NODE front = Q.front();
-        Q.pop();
-
-        for (int i = 0; i < 4; i++) {
-            int r = front.r + dr[i];
-            int c = front.c + dc[i];
-            if (r < 0 || r >= h || c < 0 || c >= w) {
-                if (!front.isFire) return front.time + 1;
-                continue;
-            }
-            if (grid[r][c] == '#') continue;
-            if (visited[r][c]) continue;
-            visited[r][c] = true;
-            Q.emplace(r, c, front.time + 1, front.isFire);
-        }
-    }
-    return -1;
-}
+int w, h, t;
+char a[1001][1001];
+vector<pair<int, int>> fire;
+pair<int, int> start;
+int visited_fire[1001][1001];
+int visited_sang[1001][1001];
+const int dy[] = { -1, 0, 1, 0 };
+const int dx[] = { 0, 1, 0, -1 };
 
 signed main() {
-    fastIO;
+    fastio;
 
-    BJ Q6593;
+    cin >> t;
+    while (t--) {
+        int chk = 0;
+
+        fire.clear();
+        fill(&visited_fire[0][0], &visited_fire[0][0] + 1001 * 1001, 1e10);
+        fill(&visited_sang[0][0], &visited_sang[0][0] + 1001 * 1001, 0);
+        //fill(&a[0][0], &a[0][0] + 1001 * 1001, '0');
+        cin >> w >> h;
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                cin >> a[i][j];
+                if (a[i][j] == '*') fire.push_back({ i, j });
+                if (a[i][j] == '@') start = { i, j };
+            }
+        }
+
+        if (start.first == 0 || start.second == 0 || start.first == h - 1 || start.second == w - 1) {
+            cout << 1 << '\n';
+            continue;
+        }
+
+        queue<pair<int, int>> qt;
+        for (pair<int, int> v : fire) {
+            visited_fire[v.first][v.second] = 1;
+            qt.push(v);
+        }
+        int y, x;
+        while (qt.size()) {
+            tie(y, x) = qt.front(); qt.pop();
+            for (int i = 0; i < 4; i++) {
+                int ny = y + dy[i];
+                int nx = x + dx[i];
+                if (ny < 0 || nx < 0 || ny >= h || nx >= w) continue;
+                if (visited_fire[ny][nx] != 1e10) continue;
+                if (a[ny][nx] == '#') continue;
+                visited_fire[ny][nx] = visited_fire[y][x] + 1;
+                qt.push({ ny, nx });
+            }
+        }
+        queue<pair<int, int>> q;
+        visited_sang[start.first][start.second] = 1;
+        q.push(start);
+        while (q.size()) {
+            tie(y, x) = q.front(); q.pop();
+            for (int i = 0; i < 4; i++) {
+                int ny = y + dy[i];
+                int nx = x + dx[i];
+                if (ny < 0 || nx < 0 || ny >= h || nx >= w) continue;
+                if (visited_sang[ny][nx]) continue;
+                if (a[ny][nx] == '#') continue;
+                visited_sang[ny][nx] = visited_sang[y][x] + 1;
+                if (ny == 0 || nx == 0 || ny == h-1 || nx == w-1) {
+                    if (visited_sang[ny][nx] < visited_fire[ny][nx]) {
+                        chk = 1;
+                        cout << visited_sang[ny][nx] << '\n';
+                        break;
+                    }
+                }
+                q.push({ ny, nx });
+            }
+            if (chk) break;
+        }
+        if (chk == 0) cout << "IMPOSSIBLE\n";
+
+
+    }
+
+
+
 }
+/*
+1
+4 4
+....
+....
+..@.
+****
+ */
