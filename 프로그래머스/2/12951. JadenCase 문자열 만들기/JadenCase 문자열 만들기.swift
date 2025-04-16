@@ -1,11 +1,5 @@
 import Foundation
 
 func solution(_ s:String) -> String {
-    let s = Array(s.lowercased())
-    let answer: [String]
-    answer = s.enumerated().map {
-        if $0.offset == 0 || s[$0.offset-1] == " " { return String($0.element).uppercased() }
-        else { return String($0.element) }
-    }
-    return answer.joined()
+    return s.lowercased().components(separatedBy: " ").map { if $0.count == 0 { return $0 } else { return String($0.first!).uppercased() + $0.suffix($0.count-1) } }.joined(separator: " ")
 }
