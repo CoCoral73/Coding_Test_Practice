@@ -1,13 +1,21 @@
 import Foundation
 
 func solution(_ s:String) -> [Int] {
-    var s = s
-    var a = 0, b = 0
-    while s.count != 1 {
-        let tmp = s.replacingOccurrences(of: "0", with: "")
-        b += (s.count - tmp.count)
-        s = String(tmp.count, radix: 2)
-        a += 1
+    func trans2Binary(_ s: inout String) -> Int {
+        var result = s.count
+        s = s.filter { $0 == "1" }
+        result -= s.count
+        
+        s = String(s.count, radix: 2)
+        return result
     }
-    return [a, b]
+    
+    var s = s
+    var answer: [Int] = [0, 0]
+    while s != "1" {
+        answer[0] += 1
+        answer[1] += trans2Binary(&s)
+    }
+    
+    return answer
 }
