@@ -1,15 +1,12 @@
 import Foundation
 
-func solution(_ n:Int) -> Int
-{
-    func count1(_ str:String) -> Int {
-        return str.reduce(0) { $0 + Int(String($1))! }
+func solution(_ n: Int) -> Int {
+    var answer: Int = n + 1
+    let countOf1 = String(n, radix: 2).filter { $0 == "1" }.count
+    
+    while String(answer, radix: 2).filter { $0 == "1" }.count != countOf1 {
+        answer += 1
     }
-    let cnt1 = count1(String(n, radix: 2))
-    var n = n + 1
-    while true {
-        let cnt2 = count1(String(n, radix: 2))
-        if cnt1 == cnt2 { return n }
-        n += 1
-    }
+    
+    return answer
 }
