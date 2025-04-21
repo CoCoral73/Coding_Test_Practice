@@ -1,25 +1,29 @@
 import Foundation
 
 func solution(_ k:Int, _ tangerine:[Int]) -> Int {
-    let tangerine = tangerine.sorted()
-    var cnt = [Int]()
-    var start = 0, end = 0
-    var answer = 0, total = 0
+    var dict: [Int: Int] = [:]
     
-    while start < tangerine.count {
-        if end == tangerine.count || tangerine[end] != tangerine[start] {
-            cnt.append(end - start)
-            start = end
+    tangerine.forEach { 
+        if let _ = dict[$0] {
+            dict[$0]! += 1
+        } else {
+            dict.updateValue(1, forKey: $0)
         }
-        else { end += 1 }
     }
     
-    cnt.sort(by: >)
-    for i in 0..<cnt.count {
-        answer += 1
-        total += cnt[i]
-        if total >= k { break }
+    let sortedKey = dict.keys.sorted {
+        return dict[$0]! > dict[$1]!
     }
-    
-    return answer
+
+    var total = 0
+    for i in 0..<sortedKey.count {
+        let count = dict[sortedKey[i]]!
+        
+        if total + count >= k {
+            return i + 1
+        } else {
+            total += count
+        }
+    }
+    return 0
 }
