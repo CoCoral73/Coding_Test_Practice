@@ -1,10 +1,10 @@
 # [level 2] 연속 부분 수열 합의 개수 - 131701 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131701?language=cpp) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131701?language=swift) 
 
 ### 성능 요약
 
-메모리: 22.8 MB, 시간: 673.09 ms
+메모리: 27.6 MB, 시간: 218.53 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2024년 03월 14일 13:07:04
+2025년 05월 03일 17:26:18
 
 ### 문제 설명
 
