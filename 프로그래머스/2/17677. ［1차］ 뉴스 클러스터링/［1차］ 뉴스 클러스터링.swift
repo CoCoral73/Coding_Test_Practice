@@ -1,36 +1,38 @@
 import Foundation
 
 func solution(_ str1:String, _ str2:String) -> Int {
-    //자카드 유사도: 교집합 크기 / 합집합 크기, 둘 다 공집합일 경우 1
-    let str1 = str1.lowercased(), str2 = str2.lowercased()
-    var set1 = Dictionary<String, Int>(), set2 = Dictionary<String, Int>()
+    //J(A, B) = n(A ∩ B) / n(A ∪ B) *A, B 둘다 공집합일 경우 1
+    let str1 = str1.lowercased.map { $0 }, str2 = str2.lowercased.map { $0 }
+    var A = [String:Int](), B = A
     
     for i in 0..<(str1.count-1) {
-        let idx1 = str1.index(str1.startIndex, offsetBy: i)
-        let idx2 = str1.index(after: idx1)
-        if !str1[idx1].isLetter || !str1[idx2].isLetter { continue }
-        let word = String(str1[idx1...idx2])
-        if set1[word] == nil { set1.updateValue(1, forKey: word) }
-        else { set1[word]! += 1 }
+        if str1[i].isLetter && str1[i+1].isLetter {
+            let word = "\(str1[i])\(str1[i+1])"
+            if let _ = A[word] {
+                A[word]! += 1
+            } else {
+                A[word] = 1
+            }
+        }
     }
     
     for i in 0..<(str2.count-1) {
-        let idx1 = str2.index(str2.startIndex, offsetBy: i)
-        let idx2 = str2.index(after: idx1)
-        if !str2[idx1].isLetter || !str2[idx2].isLetter { continue }
-        let word = String(str2[idx1...idx2])
-        if set2[word] == nil { set2.updateValue(1, forKey: word) }
-        else { set2[word]! += 1 }
+        if str2[i].isLetter && str2[i+1].isLetter {
+            let word = "\(str2[i])\(str2[i+1])"
+            if let _ = B[word] {
+                B[word]! += 1
+            } else {
+                B[word] = 1
+            }
+        }
     }
     
-    var x = 0, y = 0
-    let set = Set(set1.keys).union(set2.keys)
-    set.forEach { word in
-        let cnt1 = set1[word] ?? 0
-        let cnt2 = set2[word] ?? 0
-        x += min(cnt1, cnt2)
-        y += max(cnt1, cnt2)
+    var intersect: Int = 0, union: Int = 0
+    for key in Set(A.keys).union(Set(B.keys)) {
+        intersect += min(A[key] ?? 0, B[key] ?? 0)
+        union += max(A[key] ?? 0, B[key] ?? 0)
     }
     
-    return y == 0 ? 65536 : Int((Double(x) / Double(y))*65536)
+    if union == 0 { return 65536 }
+    return Int(Double(intersect) / Double(union) * 65536)
 }
