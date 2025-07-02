@@ -1,39 +1,23 @@
 import Foundation
 
-extension String {
-    func getCharacter(_ i:Int) -> Character {
-        let index = self.index(self.startIndex, offsetBy: i)
-        return self[index]
+func isPrime(_ n: Int) -> Bool {
+    if n <= 1 { return false }
+    if n <= 3 { return true }
+    
+    for i in stride(from: 2, through: Int(pow(Double(n), 0.5)), by: 1) {
+        if n % i == 0 { return false }
     }
-    func substring(_ range: Range<Int>) -> String {
-        let start = self.index(self.startIndex, offsetBy: range.lowerBound)
-        let end = self.index(self.startIndex, offsetBy: range.upperBound)
-        return String(self[start..<end])
-    }
-}
-extension Int {
-    func isPrime() -> Bool {
-        if self < 2 { return false }
-        if self < 4 { return true }
-        for i in 2...Int(sqrt(Double(self))) {
-            if self % i == 0 { return false }
-        }
-        return true
-    }
+    return true 
 }
 
 func solution(_ n:Int, _ k:Int) -> Int {
-    let binary = String(n, radix: k)
-    var start = 0, end = 0, answer = 0
+    var nums = String(n, radix: k).components(separatedBy: "0").filter { $0 != "" }
+    var answer: Int = 0
     
-    while binary.getCharacter(start) == "0" { start += 1 }
-    while start < binary.count {
-        end = start
-        while end < binary.count && binary.getCharacter(end) != "0" { end += 1 }
-        
-        if Int(binary.substring(start..<end))!.isPrime() { answer += 1 }
-        start = end + 1
-        while start < binary.count && binary.getCharacter(start) == "0" { start += 1 }
+    for num in nums {
+        if isPrime(Int(num)!) {
+            answer += 1
+        }
     }
     return answer
 }
