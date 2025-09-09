@@ -1,35 +1,33 @@
-import Foundation
-
-extension String {
-    func getCharacter(_ i:Int) -> Character {
-        let index = self.index(self.startIndex, offsetBy: i)
-        return self[index]
-    }
-    func substring(_ range: Range<Int>) -> String {
-        let start = self.index(self.startIndex, offsetBy: range.lowerBound)
-        let end = self.index(self.startIndex, offsetBy: range.upperBound)
-        return String(self[start..<end])
-    }
-    func substring(_ closedrange: ClosedRange<Int>) -> String {
-        let start = self.index(self.startIndex, offsetBy: closedrange.lowerBound)
-        let end = self.index(self.startIndex, offsetBy: closedrange.upperBound)
-        return String(self[start...end])
-    }
-}
-
+import Foundation 
 
 func solution(_ msg:String) -> [Int] {
-    var dict = Dictionary<String, Int>(), last = 27
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ".enumerated().forEach { dict.updateValue($0.offset+1, forKey: String($0.element)) }
+    let msg = msg.map { String($0) }
+    let alphabet = (65...90).map { String(UnicodeScalar($0)!) }
+    var dict: [String: Int] = [:], lastIndex = 27, maxLen = 1
+    var answer: [Int] = []
     
-    var answer = [Int]()
-    var start = 0, end = 0
-    while start < msg.count {
-        end = start
-        while end < msg.count && dict[msg.substring(start...end)] != nil { end += 1 }
-        answer.append(dict[msg.substring(start..<end)]!)
-        if end < msg.count { dict.updateValue(last, forKey: msg.substring(start...end)); last += 1 }
-        start = end
+    for i in 0..<26 {
+        dict[alphabet[i]] = i + 1
     }
+    
+    var start = 0
+    while start < msg.count {
+        for end in stride(from: min(start + maxLen - 1, msg.count - 1), through: start, by: -1) {
+            let word = msg[start...end].joined()
+            if let index = dict[word] {
+                answer.append(index)
+                
+                if end + 1 != msg.count {
+                    let next = word + msg[end + 1]
+                    dict[next] = lastIndex
+                    lastIndex += 1
+                }
+                maxLen = max(maxLen, end - start + 2)
+                start = end + 1
+                break
+            }
+        }
+    }
+    
     return answer
 }
