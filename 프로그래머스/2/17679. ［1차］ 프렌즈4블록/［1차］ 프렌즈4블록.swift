@@ -1,42 +1,66 @@
-import Foundation
-
 func solution(_ m:Int, _ n:Int, _ board:[String]) -> Int {
-    var board = board.map { Array($0) }
-    var answer = 0
+    var board = board.map { Array($0).map { String($0) } }
+    var visited = [[Bool]](repeating: [Bool](repeating: false, count: n), count: m)
+    var answer: Int = 0
     
-    while true {
-        var visited = [[Bool]](repeating: [Bool](repeating: false, count: n), count: m)
-        var remove = false
-        for i in 0..<(m-1) {
-            for j in 0..<(n-1) {
-                if board[i][j] != "0" && board[i][j] == board[i][j+1] && board[i][j] == board[i+1][j] && board[i][j] == board[i+1][j+1] {
-                    answer = visited[i][j] ? answer : answer + 1; visited[i][j] = true
-                    answer = visited[i][j+1] ? answer : answer + 1; visited[i][j+1] = true
-                    answer = visited[i+1][j] ? answer : answer + 1; visited[i+1][j] = true
-                    answer = visited[i+1][j+1] ? answer : answer + 1; visited[i+1][j+1] = true
-                    remove = true
-                }
-            }
-        }
-        if !remove { break }
+    func check(_ i: Int, _ j: Int) -> Int {
+        if board[i][j] == "" { return 0 }
+        if i + 1 >= m || j + 1 >= n { return 0 }
         
+        let (d1, d2, d3, d4) = (board[i][j], board[i][j+1], board[i+1][j], board[i+1][j+1])
+        if !(d1 == d2 && d1 == d3 && d1 == d4) { return 0 }
+        
+        var result: Int = 0
+        result += (visited[i][j] ? 0 : 1)
+        result += (visited[i][j+1] ? 0 : 1)
+        result += (visited[i+1][j] ? 0 : 1)
+        result += (visited[i+1][j+1] ? 0 : 1)
+        
+        visited[i][j] = true
+        visited[i][j+1] = true
+        visited[i+1][j] = true
+        visited[i+1][j+1] = true
+        
+        return result
+    }
+    
+    func clear() {
         for i in 0..<m {
             for j in 0..<n {
-                if visited[i][j] { board[i][j] = "0" }
-            }
-        }
-
-        for c in 0..<n {
-            var a = m - 1, b: Int
-            while a >= 0 && board[a][c] != "0" { a -= 1 }
-            if a < 0 { continue }
-            b = a
-            while b >= 0 {
-                while b >= 0 && board[b][c] == "0" { b -= 1 }
-                if b < 0 { break }
-                while b >= 0 && board[b][c] != "0" { board[a][c] = board[b][c]; board[b][c] = "0"; a -= 1; b -= 1 }
+                if visited[i][j] { board[i][j] = "" }
             }
         }
     }
+    
+    func move() {
+        for j in 0..<n {
+            for i in stride(from: m-1, through: 1, by: -1) {
+                if board[i][j] == "" {
+                    let k = stride(from: i-1, through: 0, by: -1).first { board[$0][j] != "" }
+                    if k == nil { break }
+                    board[i][j] = board[k!][j]
+                    board[k!][j] = ""
+                }
+            }
+        }
+    }
+    
+    while true {
+        var flag: Int = 0
+        for i in 0..<m {
+            for j in 0..<n {
+                flag += check(i, j)
+            }
+        }
+        
+        if flag == 0 { break }
+        answer += flag
+        
+        clear()
+        move()
+        visited = [[Bool]](repeating: [Bool](repeating: false, count: n), count: m)
+    }
+    
     return answer
+
 }
