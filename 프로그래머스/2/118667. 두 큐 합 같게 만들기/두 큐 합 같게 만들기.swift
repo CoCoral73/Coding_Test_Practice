@@ -1,54 +1,49 @@
 import Foundation
 
-class Queue<T> {
-    private var front_index: Int
-    var front: T?
-    var Q: [T]
-    var count: Int
+struct Queue {
+    private var enqueue: [Int] = []
+    private var dequeue: [Int] = []
     
-    init(_ arr: [T]) {
-        front_index = 0
-        front = arr.first!
-        Q = arr
-        count = arr.count
+    init(_ arr: [Int]) {
+        enqueue = arr
     }
-    func push(_ x:T) {
-        Q.append(x)
-        count += 1
+    
+    mutating func insert(_ x: Int) {
+        enqueue.append(x)
     }
-    func pop() -> T {
-        front_index += 1
-        front = front_index >= Q.count ? nil : Q[front_index]
-        count -= 1
-        return Q[front_index-1]
+    mutating func pop() -> Int? {
+        if dequeue.isEmpty {
+            dequeue = enqueue.reversed()
+            enqueue = []
+        }
+        return dequeue.popLast()
     }
 }
 
 func solution(_ queue1:[Int], _ queue2:[Int]) -> Int {
-    var Q1 = Queue(queue1), Q2 = Queue(queue2), size = queue1.count * 2
+    let max = (queue1.count + queue2.count) * 2
+    var q1 = Queue(queue1), q2 = Queue(queue2)
     var sum1 = queue1.reduce(0, +), sum2 = queue2.reduce(0, +)
     
     if (sum1 + sum2) % 2 == 1 { return -1 }
     
-    var answer = 0
-    while true {
-        if answer > size * 2 { break }
+    var answer: Int = 0
+    while answer < max {
         if sum1 < sum2 {
-            let front2 = Q2.pop()
-            Q1.push(front2)
-            sum1 += front2
-            sum2 -= front2
-        }
-        else if sum1 > sum2 {
-            let front1 = Q1.pop()
-            Q2.push(front1)
-            sum1 -= front1
-            sum2 += front1
-        }
-        else {
+            let pop = q2.pop()!
+            q1.insert(pop)
+            sum1 += pop
+            sum2 -= pop
+        } else if sum1 > sum2 {
+            let pop = q1.pop()!
+            q2.insert(pop)
+            sum1 -= pop
+            sum2 += pop
+        } else {
             return answer
         }
         answer += 1
     }
+    
     return -1
 }
