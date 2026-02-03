@@ -1,10 +1,10 @@
 # [level 2] 큰 수 만들기 - 42883 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42883) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42883?language=swift) 
 
 ### 성능 요약
 
-메모리: 27.7 MB, 시간: 90.43 ms
+메모리: 27.8 MB, 시간: 194.83 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 03월 19일 17:34:04
+2026년 02월 03일 23:13:33
 
 ### 문제 설명
 
