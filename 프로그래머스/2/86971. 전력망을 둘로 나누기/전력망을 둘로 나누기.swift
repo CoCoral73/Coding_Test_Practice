@@ -1,30 +1,35 @@
 import Foundation
 
 func solution(_ n:Int, _ wires:[[Int]]) -> Int {
-    var adj = [[Int]](repeating: [Int](), count: n+1)
-    var visited = [Bool](repeating: false, count: n+1)
-    wires.forEach { wire in
-        adj[wire[0]].append(wire[1])
-        adj[wire[1]].append(wire[0])
-    }
+    var isVisited = [Bool](repeating: false, count: n+1)
+    var edges = [[Int]](repeating: [Int](), count: n+1)
+    var cutLine: [Int] = []
+    var result: Int = 0, answer: Int = 100
     
-    func dfs(_ now: Int, _ no_wire: Set<Int>) {
-        visited[now] = true
-        for i in adj[now] {
-            if visited[i] { continue }
-            if Set([now, i]) == no_wire { continue }
-            dfs(i, no_wire)
+    func dfs(_ a: Int) {
+        isVisited[a] = true
+        result += 1
+        
+        for b in edges[a] {
+            if !isVisited[b] && (cutLine != [a, b] && cutLine != [b, a]) {
+                dfs(b)
+            }
         }
     }
     
-    var result = n
-    wires.forEach { wire in
-        let no_wire = Set(wire)
-        visited = [Bool](repeating: false, count: n+1)
-        dfs(1, no_wire)
-        let cnt1 = visited.filter { $0 == true }.count, cnt2 = n - cnt1
-        //print(cnt1, cnt2)
-        result = min(result, abs(cnt1-cnt2))
+    for wire in wires {
+        let (a, b) = (wire[0], wire[1])
+        edges[a].append(b)
+        edges[b].append(a)
     }
-    return result
+    
+    for wire in wires {
+        result = 0
+        (1...n).forEach { isVisited[$0] = false }
+        cutLine = wire
+        dfs(1)
+        answer = min(answer, abs(n - 2 * result))
+    }
+    
+    return answer
 }
