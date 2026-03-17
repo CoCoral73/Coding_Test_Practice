@@ -66,7 +66,5 @@ void dfs(int x) {
         y = x / 2;
     }
 
-    if (y >= 1) {
-        dfs(y);
-    }
+    dfs(y);
 }
