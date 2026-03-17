@@ -49,12 +49,12 @@ int main() {
             q.emplace(x-1);
         }
         
-        if (x + 1 <= 200000 && visited[x+1] > visited[x] + 1) {
+        if (x + 1 <= K && visited[x+1] > visited[x] + 1) {
             visited[x+1] = visited[x] + 1;
             q.emplace(x+1);
         }
         
-        if (2*x <= 200000 && visited[2*x] > visited[x] + 1) {
+        if (3*x <= 2*K && visited[2*x] > visited[x] + 1) {
             visited[2*x] = visited[x] + 1;
             q.emplace(2*x);
         }
