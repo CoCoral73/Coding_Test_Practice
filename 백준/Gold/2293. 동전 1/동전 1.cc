@@ -1,29 +1,49 @@
+//
+//  main.cpp
+//  CppPractice
+//
+//  Created by 김정원 on 3/13/26.
+//
+
 #include <iostream>
+#include <vector>
+#include <map>
+#include <set>
+#include <algorithm>
+#include <queue>
+#define pii pair<int, int>
+
 using namespace std;
 
+const int INF = 2e9;
+int dr[4] = {-1, 0, 1, 0};
+int dc[4] = {0, 1, 0, -1};
+
+int n, k;
+vector<int> coins;
+int dp[100001];
+
 int main() {
-    int n, k, v;
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL); cout.tie(NULL);
+    
     cin >> n >> k;
-
-    int *D = new int[k+1];
-    D[0] = 0;
-
+    
     for (int i = 0; i < n; i++) {
-        cin >> v;
-        for (int j = 1; j <= k; j++) {
-            if (i == 0) {
-                if (j % v == 0)
-                    D[j] = 1;
-                else
-                    D[j] = 0;
-            }
-            else {
-                if (j == v)
-                    D[j]++;
-                else if (j-v > 0)
-                    D[j] += D[j-v];
-            }
+        int coin;
+        cin >> coin;
+        
+        if (coin <= k) {
+            coins.emplace_back(coin);
         }
     }
-    cout << D[k];
+    
+    for (int i = 0; i < coins.size(); i++) {
+        dp[coins[i]] += 1;
+        for (int j = coins[i] + 1; j <= k; j++) {
+            dp[j] += dp[j - coins[i]];
+        }
+    }
+    
+    cout << dp[k];
 }
