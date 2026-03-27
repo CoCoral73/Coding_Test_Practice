@@ -1,132 +1,127 @@
+//
+//  main.cpp
+//  CppPractice
+//
+//  Created by 김정원 on 3/13/26.
+//
+
 #include <iostream>
-#include <sstream>
-#include <string>
 #include <vector>
-#include <queue>
 #include <map>
 #include <set>
 #include <algorithm>
-#include <cmath>
-#include <limits.h>
-#define int long long
-#define fastIO ios_base::sync_with_stdio(false), cin.tie(0), cout.tie(0)
+#include <queue>
+#define pii pair<int, int>
+
 using namespace std;
 
-class BJ {
-    int N;
-    int grid[100][100];
-    int dr[4] = {-1, 0, 1, 0};
-    int dc[4] = {0, 1, 0, -1};
-    bool visited[100][100];
-    int answer = INT32_MAX;
-public:
-    BJ();
-    void bfs_section(int r, int c, int n);
-    void bfs_bridge(int r, int c);
-};
+const int INF = 2e9;
+int dr[4] = {-1, 0, 1, 0};
+int dc[4] = {0, 1, 0, -1};
 
-BJ::BJ() {
+int N;
+int matrix[100][100];
+int visited[100][100];
+int cnt, answer = INF;
+
+void dfs(int n, int i, int j);
+int bfs(int i, int j);
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL); cout.tie(NULL);
+    
     cin >> N;
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            cin >> grid[i][j];
-            visited[i][j] = false;
+            cin >> matrix[i][j];
         }
     }
-
-    int section = 1;
+    
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            if (visited[i][j] || grid[i][j] == 0) continue;
-            bfs_section(i, j, section);
-            section++;
-        }
-    }
-
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            if (grid[i][j] == 0) continue;
-            bool flag = false;
-            for (int k = 0; k < 4; k++) {
-                int R = i + dr[k];
-                int C = j + dc[k];
-                if (R < 0 || R >= N || C < 0 || C >= N) continue;
-                if (grid[R][C] == 0) {
-                    flag = true;
-                    break;
-                }
-            }
-            if (flag) {
-                for (int a = 0; a < N; a++) {
-                    for (int b = 0; b < N; b++)
-                        visited[a][b] = false;
-                }
-                bfs_bridge(i, j);
+            if (matrix[i][j] == 1 && !visited[i][j]) {
+                dfs(++cnt, i, j);
             }
         }
     }
-
+    
+    fill(&visited[0][0], &visited[0][0] + 100 * 100, INF);
+    
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if (matrix[i][j] == cnt) goto output;
+            if (matrix[i][j] != 0 && visited[i][j] == INF) {
+                answer = min(answer, bfs(i, j));
+                if (answer == 1) goto output;
+            }
+        }
+    }
+    
+    output:
     cout << answer;
 }
-void BJ::bfs_section(int r, int c, int n) {
-    queue<pair<int, int>> Q;
-    Q.emplace(r, c);
-    visited[r][c] = true;
-    grid[r][c] = n;
 
-    while (!Q.empty()) {
-        tie(r, c) = Q.front();
-        Q.pop();
-
-        for (int i = 0; i < 4; i++) {
-            int R = r + dr[i];
-            int C = c + dc[i];
-            if (R < 0 || R >= N || C < 0 || C >= N) continue;
-            if (grid[R][C] == 0) continue;
-            if (visited[R][C]) continue;
-            visited[R][C] = true;
-            grid[R][C] = n;
-            Q.emplace(R, C);
-        }
+void dfs(int n, int i, int j) {
+    matrix[i][j] = n;
+    visited[i][j] = true;
+    
+    for (int a = 0; a < 4; a++) {
+        int r = i + dr[a];
+        int c = j + dc[a];
+        
+        if (r < 0 || r >= N || c < 0 || c >= N) continue;
+        if (visited[r][c]) continue;
+        if (matrix[r][c] != 1) continue;
+        dfs(n, r, c);
     }
 }
 
-typedef struct node {
-    int r, c;
-    int count;
-    node(int r, int c, int count) {
-        this->r = r;
-        this->c = c;
-        this->count = count;
-    }
-}NODE;
-void BJ::bfs_bridge(int r, int c) {
-    queue<NODE> Q;
-    Q.emplace(r, c, 0);
-
-    while (!Q.empty()) {
-        NODE front = Q.front();
-        Q.pop();
-
+int bfs(int i, int j) {
+    queue<pii> q1, q2;
+    q1.push({i, j});
+    visited[i][j] = 0;
+    
+    int n = matrix[i][j];
+    
+    while (!q1.empty()) {
+        int y = q1.front().first;
+        int x = q1.front().second;
+        q1.pop();
+        
         for (int i = 0; i < 4; i++) {
-            int R = front.r + dr[i];
-            int C = front.c + dc[i];
-            if (R < 0 || R >= N || C < 0 || C >= N) continue;
-            if (grid[R][C] == 0) {
-                if (visited[R][C]) continue;
-                visited[R][C] = true;
-                Q.emplace(R, C, front.count + 1);
+            int r = y + dr[i];
+            int c = x + dc[i];
+            
+            if (r < 0 || r >= N || c < 0 || c >= N) continue;
+            if (matrix[r][c] == 0) {
+                q2.push({y, x});
+                continue;
             }
-            else if (grid[R][C] != grid[r][c]) {
-                answer = min(answer, front.count);
-                break;
-            }
+            if (matrix[r][c] != n) continue;
+            if (visited[r][c] == 0) continue;
+            visited[r][c] = 0;
+            q1.push({r, c});
+            
         }
     }
-}
-
-signed main() {
-    fastIO;
-
-    BJ Q2961;
+    
+    while (!q2.empty()) {
+        int y = q2.front().first;
+        int x = q2.front().second;
+        q2.pop();
+        
+        for (int i = 0; i < 4; i++) {
+            int r = y + dr[i];
+            int c = x + dc[i];
+            
+            if (r < 0 || r >= N || c < 0 || c >= N) continue;
+            if (matrix[r][c] != 0 && matrix[r][c] != n) return visited[y][x];
+            if (matrix[r][c] != 0) continue;
+            if (visited[r][c] <= visited[y][x] + 1) continue;
+            visited[r][c] = visited[y][x] + 1;
+            q2.push({r, c});
+        }
+    }
+    return INF;
 }
